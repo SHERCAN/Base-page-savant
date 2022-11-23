@@ -44,17 +44,17 @@ async def main(request: Request):
     return response
 
 
-@app.get('/', response_class=HTMLResponse)
-async def main(request: Request):
+@app.get('/signin', response_class=HTMLResponse)
+async def signin(request: Request):
     context = {'request': request}
-    response = templates.TemplateResponse('index.html', context=context)
+    response = templates.TemplateResponse('signin.html', context=context)
     return response
 
 
-@app.get('/', response_class=HTMLResponse)
-async def main(request: Request):
+@app.get('/signup', response_class=HTMLResponse)
+async def signup(request: Request):
     context = {'request': request}
-    response = templates.TemplateResponse('index.html', context=context)
+    response = templates.TemplateResponse('signup.html', context=context)
     return response
 
 
