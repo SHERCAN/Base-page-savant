@@ -13,50 +13,22 @@ from fastapi import APIRouter
 from starlette.responses import RedirectResponse
 import pathlib
 import json
-
+from security.auth import auth_routes
+from routes.routes import routes
+from routes.main import main
+from dotenv import load_dotenv
+from os import getenv
+load_dotenv()
 
 # -----------------------------------run---------------
-app = FastAPI(title='Config MPPT',
-              description='Configuration of the BMS server', version='0.0.1')
+
+app = FastAPI(title='Server Enerion',
+              description='Server with all data for SAVANT', version='0.0.1')
 templates = Jinja2Templates(directory='templates')
 app.mount("/static", StaticFiles(directory="static"), name="static")
-# app.mount("/static", StaticFiles(directory="static"), name="js")
-
-
-@app.get('/', response_class=HTMLResponse)
-async def main(request: Request):
-    context = {'request': request}
-    response = templates.TemplateResponse('index.html', context=context)
-    return response
-
-
-@app.get('/button', response_class=HTMLResponse)
-async def main(request: Request):
-    context = {'request': request}
-    response = templates.TemplateResponse('button.html', context=context)
-    return response
-
-
-@app.get('/', response_class=HTMLResponse)
-async def main(request: Request):
-    context = {'request': request}
-    response = templates.TemplateResponse('index.html', context=context)
-    return response
-
-
-@app.get('/signin', response_class=HTMLResponse)
-async def signin(request: Request):
-    context = {'request': request}
-    response = templates.TemplateResponse('signin.html', context=context)
-    return response
-
-
-@app.get('/signup', response_class=HTMLResponse)
-async def signup(request: Request):
-    context = {'request': request}
-    response = templates.TemplateResponse('signup.html', context=context)
-    return response
-
+app.include_router(main)
+app.include_router(auth_routes, prefix='/api')
+app.include_router(routes)
 
 if __name__ == '__main__':
     uvicorn.run('app:app', log_level='info', access_log=False, reload=True)
