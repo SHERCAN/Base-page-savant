@@ -21,7 +21,14 @@ class User(BaseModel):
 
 @auth_routes.post("/login")
 async def login(email: str = Form(), password: str = Form(), request: Request = None):
-    user = list(dataBase.readUser(id=email))
+    try:
+        user = list(dataBase.readUser(id=email))
+    except:
+        # sin conexión base de datos
+        context = {'request': request, 'message': 'BD'}
+        response = templates.TemplateResponse(
+            'signin.html', context=context)
+        return response
     if len(user) > 0:
         if Hash.verify_password(password, user[0]['password']):
             token = write_token({'email': email})

@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from pymongo.errors import ExecutionTimeout
 from os import getenv
 load_dotenv()
 
@@ -45,12 +46,24 @@ class BaseData():
                 if key == 'id':
                     key = '_id'
                 self.__dictGet[key] = value
-            return self.__conn['Users'].find(self.__dictGet)
+            try:
+                returned = self.__conn['Users'].find(
+                    self.__dictGet, max_time_ms=2000)
+            except ExecutionTimeout:
+                returned = None
         else:
-            return self.__conn['Users'].find()
+            try:
+                returned = self.__conn['Users'].find(max_time_ms=2000)
+            except ExecutionTimeout:
+                returned = None
+        return returned
 
     def readDataData(self):
-        return self.__conn['Data'].find()
+        try:
+            returned = self.__conn['Data'].find(max_time_ms=2000)
+        except ExecutionTimeout:
+            returned = None
+        return returned
 
 
 dataBase = BaseData()
