@@ -19,25 +19,6 @@ class User(BaseModel):
     password: str
 
 
-@auth_routes.post("/login")
-async def login(email: str = Form(), password: str = Form(), request: Request = None):
-    user = list(dataBase.readUser(id=email))
-    if len(user) > 0:
-        if Hash.verify_password(password, user[0]['password']):
-            token = write_token({'email': email})
-            response = RedirectResponse('/', status_code=HTTP_302_FOUND)
-            response.set_cookie(key="Authorization", value=token)
-        else:
-            context = {'request': request, 'message': 'IP'}
-            response = templates.TemplateResponse(
-                'signin.html', context=context)
-    else:
-        context = {'request': request, 'message': 'ENT'}
-        response = templates.TemplateResponse(
-            'signin.html', context=context)
-    return response
-
-
 @auth_routes.post("/verify_token")
 def verify_token(Authorization: str = Header(None)):
     token = Authorization.split(" ")[1]

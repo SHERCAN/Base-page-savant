@@ -16,12 +16,16 @@
                     Password is incorrect
                 </div>
                 {% endif %}
+                {% if message=='BD' %}
+                <div class="alert alert-danger" role="alert">
+                    No access to database
+                </div>
                 {% if message=='ENT' %}
                 <div class="alert alert-danger" role="alert">
                     Account not found
                 </div>
                 {% endif %}
-                <form method="post" action="/api/login">
+                <form method="post" action="/signin">
                     <div class="form-floating mb-3">
                         <input type="email" class="form-control" id="floatingInput" autocomplete="email"
                             placeholder="name@example.com" name="email">

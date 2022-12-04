@@ -10,12 +10,20 @@ from fastapi import Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import datetime as dt
+from fastapi.responses import FileResponse
 from fastapi import APIRouter
 from starlette.responses import RedirectResponse
 import pathlib
 import json
+from csv import DictWriter
 from security.auth import auth_routes
 from classobject.classes import signupClass, Hash
+from config.bd import dataBase
+from bson.objectid import ObjectId
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from starlette.status import HTTP_302_FOUND
+from security.jwt_functions import validate_token, write_token
 
 main = APIRouter()
 
@@ -26,6 +34,32 @@ templates = Jinja2Templates(directory='templates')
 async def signin(request: Request):
     context = {'request': request}
     response = templates.TemplateResponse('signin.html', context=context)
+    return response
+
+
+@main.post("/signin")
+async def login(email: str = Form(), password: str = Form(), request: Request = None):
+    try:
+        user = list(dataBase.readUser(id=email))
+    except:
+        # sin conexión base de datos
+        context = {'request': request, 'message': 'BD'}
+        response = templates.TemplateResponse(
+            'signin.html', context=context)
+        return response
+    if len(user) > 0:
+        if Hash.verify_password(password, user[0]['password']):
+            token = write_token({'email': email})
+            response = RedirectResponse('/', status_code=HTTP_302_FOUND)
+            response.set_cookie(key="Authorization", value=token)
+        else:
+            context = {'request': request, 'message': 'IP'}
+            response = templates.TemplateResponse(
+                'signin.html', context=context)
+    else:
+        context = {'request': request, 'message': 'ENT'}
+        response = templates.TemplateResponse(
+            'signin.html', context=context)
     return response
 
 
@@ -51,3 +85,14 @@ async def signup(request: Request):
     context = {'request': request}
     response = templates.TemplateResponse('signup.html', context=context)
     return response
+
+
+@main.get("/get_csv")
+async def get_csv():
+    return FileResponse('data.csv', filename='data.csv')
+
+
+@main.post('/addData')
+async def webhook(request: dict):
+    dataBase.sendData(request)
+    return ''

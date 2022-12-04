@@ -79,140 +79,95 @@
     <!-- Recent Sales Start -->
     <div class="container-fluid pt-4 px-4">
         <div class="bg-secondary text-center rounded p-4">
-            <div class="border border-light padding rounded p-2 mb-2">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h6 class="mb-0">Registers</h6>
-                    <!-- <a href="">Show All</a> -->
-                </div>
-                <div class="d-flex flex-wrap mb-2">
-                    {% for key, value in data.items() -%}
-                    <div class="d-flex p-2 align-items-center flex-wrap">
-                        <div class="align-items-center p-1">{{key}}</div>
+            <form id="formulario" action="/get_registers" method="post">
 
-                        <select class="selectpicker align-middle mb-0" name="lenguajes" id="lang" multiple>
-                            {%- for e in value %}
-                            <option value={{e}}>{{e}}</option>
-                            {% endfor -%}
-                        </select>
+                <div class="border border-light padding rounded p-2 mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="mb-0">Registers</h6>
+                        <!-- <a href="">Show All</a> -->
                     </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="border border-light padding rounded p-2 mb-2">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h6 class="mb-0">Dates</h6>
-                    <!-- <a href="">Show All</a> -->
-                </div>
-                <div class="d-flex flex-wrap mb-2">
-                    <div class="d-flex p-2 align-items-center flex-wrap">
-                        <div class="align-items-center p-1">Initial date</div><input class="date" type="date">
-                    </div>
-                    <br>
-                    <div class="d-flex p-2 align-items-center flex-wrap">
-                        <div class="align-items-center p-1">Final date</div>
-                        <input class="date" type="date">
+                    <div class="d-flex flex-wrap mb-2">
+                        {% for key, value in data.items() -%}
+                        <div class="d-flex p-2 align-items-center flex-wrap">
+                            <div class="align-items-center p-1">{{key}}</div>
+                            <select class="selectpicker align-middle mb-0 form-control" name={{key+'[]'}} id="lang"
+                                multiple form="formulario">
+                                {%- for e in value %}
+                                <option value={{e|replace(" ","")}} name={{e}} class=" form-control" form="formulario">
+                                    {{e}}
+                                </option>
+                                {% endfor -%}
+                            </select>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
-            </div>
-            <div class="border border-light padding rounded p-2 mb-2">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h6 class="mb-0">Places</h6>
-                    <!-- <a href="">Show All</a> -->
-                </div>
-                <div class="d-flex flex-wrap mb-2">
-                    <div class="d-flex p-2 align-items-center flex-wrap">
-                        <div class="align-items-center p-1"> State</div>
-                        <select class="selectpicker text-start align-middle table-bordered table-hover mb-0"
-                            name="lenguajes" id="lang" multiple>
-                            <option value="php">New York</option>
-                            <option value="java">Oregon</option>
-                        </select>
+                <div class="border border-light padding rounded p-2 mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="mb-0">Dates</h6>
+                        <!-- <a href="">Show All</a> -->
                     </div>
-                    <div class="d-flex p-2 align-items-center flex-wrap">
-                        <div class="align-items-center p-1"> City</div>
-                        <select class="selectpicker text-start align-middle table-bordered table-hover mb-0"
-                            name="lenguajes" id="lang" multiple>
-                            <option value="javascript">Cariboo</option>
-                            <option value="php">Springfield</option>
-                            <option value="java">New Jersey</option>
-                        </select>
-                    </div>
-                    <div class="d-flex p-2 align-items-center flex-wrap">
-                        <div class="align-items-center p-1"> Client</div>
-                        <select class="selectpicker text-start align-middle table-bordered table-hover mb-0"
-                            name="lenguajes" id="lang" multiple>
-                            <option value="javascript">12341</option>
-                            <option value="php">34121</option>
-                            <option value="java">99765</option>
-                        </select>
+                    <div class="d-flex flex-wrap mb-2">
+                        <div class="d-flex p-2 align-items-center flex-wrap">
+                            <div class="align-items-center p-1">Initial date</div><input class="date form-control"
+                                type="date" name="initialdate">
+                        </div>
+                        <br>
+                        <div class="d-flex p-2 align-items-center flex-wrap">
+                            <div class="align-items-center p-1">Final date</div>
+                            <input class="date form-control" name="finaldate" type="date">
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div>
-                <button type="button" class="btn btn-primary">Download history </button>
-            </div>
-            <!-- <div class="table-responsive">
-                <table class="table text-start align-middle table-bordered table-hover mb-0">
-                    <thead>
-                        <tr class="text-white">
-                            <th scope="col"><input class="form-check-input" type="checkbox"></th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Invoice</th>
-                            <th scope="col">Customer</th>
-                            <th scope="col">Amount</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><input class="form-check-input" type="checkbox"></td>
-                            <td>01 Jan 2045</td>
-                            <td>INV-0123</td>
-                            <td>Jhon Doe</td>
-                            <td>$123</td>
-                            <td>Paid</td>
-                            <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                        </tr>
-                        <tr>
-                            <td><input class="form-check-input" type="checkbox"></td>
-                            <td>01 Jan 2045</td>
-                            <td>INV-0123</td>
-                            <td>Jhon Doe</td>
-                            <td>$123</td>
-                            <td>Paid</td>
-                            <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                        </tr>
-                        <tr>
-                            <td><input class="form-check-input" type="checkbox"></td>
-                            <td>01 Jan 2045</td>
-                            <td>INV-0123</td>
-                            <td>Jhon Doe</td>
-                            <td>$123</td>
-                            <td>Paid</td>
-                            <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                        </tr>
-                        <tr>
-                            <td><input class="form-check-input" type="checkbox"></td>
-                            <td>01 Jan 2045</td>
-                            <td>INV-0123</td>
-                            <td>Jhon Doe</td>
-                            <td>$123</td>
-                            <td>Paid</td>
-                            <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                        </tr>
-                        <tr>
-                            <td><input class="form-check-input" type="checkbox"></td>
-                            <td>01 Jan 2045</td>
-                            <td>INV-0123</td>
-                            <td>Jhon Doe</td>
-                            <td>$123</td>
-                            <td>Paid</td>
-                            <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div> -->
+                <div class="border border-light padding rounded p-2 mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="mb-0">Places</h6>
+                        <!-- <a href="">Show All</a> -->
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <div class="d-flex p-2 align-items-center flex-wrap">
+                            <div class="align-items-center p-1"> State</div>
+                            <select
+                                class="selectpicker text-start align-middle table-bordered table-hover mb-0 form-control"
+                                name="state[]" id="selectstates" form="formulario" multiple>
+                                {%- for e in states %}
+                                <option value={{e|replace(" ","")}} name={{e}} class=" form-control" form="formulario">
+                                    {{e}}
+                                </option>
+                                {% endfor -%}
+                            </select>
+                        </div>
+                        <div class="d-flex p-2 align-items-center flex-wrap">
+                            <div class="align-items-center p-1"> City</div>
+                            <select
+                                class="selectpicker text-start align-middle table-bordered table-hover mb-0 form-control"
+                                name="city[]" id="selectcities" form="formulario" multiple>
+                                {%- for e in cities %}
+                                <option value={{e|replace(" ","")}} name={{e}} class=" form-control" form="formulario">
+                                    {{e}}
+                                </option>
+                                {% endfor -%}
+                            </select>
+                        </div>
+                        <div class="d-flex p-2 align-items-center flex-wrap">
+                            <div class="align-items-center p-1"> Client</div>
+                            <select
+                                class="selectpicker text-start align-middle table-bordered table-hover mb-0 form-control"
+                                name="clients[]" id="selectclients" form="formulario" multiple>
+                                {%- for e in clients %}
+                                <option value={{e|replace(" ","")}} name={{e}} class=" form-control" form="formulario">
+                                    {{e}}
+                                </option>
+                                {% endfor -%}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-primary" type="submit" id="envio">Download history </button>
+                </div>
+            </form>
+            <label class="form-label select-label">Example label</label>
         </div>
     </div>
     <!-- Recent Sales End -->
