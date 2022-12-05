@@ -14,6 +14,7 @@ from fastapi import APIRouter
 from starlette.responses import RedirectResponse
 import pathlib
 import json
+from datetime import datetime
 from security.auth import auth_routes
 from dotenv import load_dotenv
 from config.bd import dataBase
@@ -22,6 +23,7 @@ from csv import DictWriter
 from bson.objectid import ObjectId
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 load_dotenv()
 
 routes = APIRouter(route_class=VerifyTokenRoute)
@@ -34,9 +36,14 @@ templates = Jinja2Templates(directory='templates')
 async def main(request: Request):
     data = dataBase.readDataData()[0]
     data.pop('_id')
-    states = ['Bogotá', 'Medellin']
-    cities = ['Suba', 'Usaquen']
-    clients = ['CLI-BO-SU-23', 'CLI-ME-US-1']
+    clientes = dataBase.conn['Clients'].find()
+    states = []
+    cities = []
+    clients = []
+    for client in clientes:
+        states.append(client['state'])
+        cities.append(client['city'])
+        clients.append(client['_id'])
     context = {'request': request, 'data': data,
                'states': states, 'cities': cities, 'clients': clients}
     response = templates.TemplateResponse('index.html', context=context)
@@ -74,10 +81,43 @@ async def main(request: Request):
 @routes.post("/get_registers")
 async def get_registers(request: Request):
     datos = await request.form()
+    dataAllRegisters = dataBase.readDataData()
+    datos = jsonable_encoder(datos)
     print(datos)
     # FormData([('PV[]', 'PVInput1'), ('Empty[]', 'Withoutname'), ('Battery[]', 'BatteryCapacitySOC%'), ('Generator[]', 'GeneratorrelayFrequency'), ('Configuration[]',
     #          'ControlMode'), ('initialdate', '2022-12-01'), ('finaldate', '2022-12-02'), ('state[]', 'Bogotá'), ('city[]', 'Usaquen'), ('clients[]', 'CLI-BO-SU-23')])
-    getData = dataBase.readData()
+    dictAux = {}
+    dictData: dict = dataAllRegisters[0].copy()
+    dictData.pop('_id')
+    listaAux = []
+    # print(dictData)
+    for i in datos.values():
+        for v in dictData.values():
+            # print(i, type(v))
+            listaAux = [key for key, value in v.items()
+                        if value.replace(" ", "") == i]
+            if len(listaAux) > 0:
+                dictAux[str(listaAux[0])] = 1
+    print(dictAux)
+    if datos.get('initialdate') == '':
+        fecha_inicio = '2022-12-02'
+    else:
+        fecha_inicio = datos.get('initialdate').strip()
+    if datos.get('finaldate') == '':
+        fecha_fin = '2022-12-03'
+    else:
+        fecha_fin = datos.get('finaldate').strip()
+    print(fecha_fin, fecha_inicio)
+    timestamp_inicio = int(datetime.strptime(
+        fecha_inicio, "%Y-%m-%d").timestamp())
+    timestamp_fin = int(datetime.strptime(fecha_fin, "%Y-%m-%d").timestamp())
+    consulta = {"_id": {"$gte": ObjectId.from_datetime(datetime.fromtimestamp(timestamp_inicio)),
+                        "$lt": ObjectId.from_datetime(datetime.fromtimestamp(timestamp_fin))}}
+    # consulta.update(dictAux)
+    print(consulta)
+    getData = dataBase.conn['Variables'].find(consulta, dictAux)
+    # getData = dataBase.readData(kwargs=consulta)
+    print(getData[0])
     base = list(getData).copy()
     for data in base:
         data['TimeStamp'] = ObjectId(data['_id']).generation_time
@@ -85,17 +125,20 @@ async def get_registers(request: Request):
     base = jsonable_encoder(base)
     keys = list(data.keys())
     keys.reverse()
+    print('control')
     with open('data.csv', 'w', newline='') as csvFilefromMongodb:
         tuliscsv = DictWriter(
             csvFilefromMongodb, fieldnames=keys, delimiter=",")
         tuliscsv.writeheader()
         tuliscsv.writerows(base)
+    print('control1')
     return FileResponse('data.csv', filename='data.csv')
 
 
-@routes.get('/chart', response_class=HTMLResponse)
+@ routes.get('/chart', response_class=HTMLResponse)
 async def main(request: Request):
-    response = templates.TemplateResponse('404.html')
+    context = {'request': request}
+    response = templates.TemplateResponse('chart.html', context=context)
     return response
 # @routes.post('/', response_class=HTMLResponse)
 # async def main(request: Request):

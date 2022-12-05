@@ -1,0 +1,15 @@
+from pymongo import MongoClient
+
+# Conexión a la base de datos
+client = MongoClient("mongodb://localhost:27017/")
+db = client["mi_base_de_datos"]
+
+# Selección de la colección
+coleccion = db["mi_coleccion"]
+
+# Clasificación de los documentos por la marca de tiempo del ObjectId
+documentos_clasificados = coleccion.find().sort("_id.timestamp")
+
+# Recorrido de los documentos clasificados
+for doc in documentos_clasificados:
+    print(doc)
