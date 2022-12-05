@@ -13,3 +13,32 @@ documentos_clasificados = coleccion.find().sort("_id.timestamp")
 # Recorrido de los documentos clasificados
 for doc in documentos_clasificados:
     print(doc)
+
+// Inicializar WebGL y Three.js
+const canvas = document.querySelector("#mycanvas");
+const renderer = new THREE.WebGLRenderer({ canvas });
+const scene = new THREE.Scene();
+
+// Crear geometría y material del cubo
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshBasicMaterial({
+    color: 0x00ff00,
+    wireframe: true
+});
+
+// Crear objeto mesh que combina la geometría y el material del cubo
+const mesh = new THREE.Mesh(geometry, material);
+
+// Añadir el objeto mesh a la escena y configurar la cámara
+scene.add(mesh);
+const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 5);
+camera.position.z = 2;
+
+// Crear un bucle de renderizado que dibuje el cubo en el canvas
+function animate() {
+    requestAnimationFrame(animate);
+
+    mesh.rotation.x += 0.01;
+    mesh.rotation.y += 0.01;
+
+    renderer.render(scene, camera);

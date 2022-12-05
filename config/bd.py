@@ -8,7 +8,6 @@ load_dotenv()
 
 class BaseData():
     def __init__(self):
-
         self.conn = MongoClient(
             "mongodb+srv://yess:"+getenv('ACCESS_TOKEN')+"@cluster0.wdzh1o3.mongodb.net/?retryWrites=true&w=majority")[getenv('DATABASE')]
         self.__dictGet = {}

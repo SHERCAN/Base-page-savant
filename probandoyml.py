@@ -182,10 +182,32 @@ from bson.objectid import ObjectId
 # for doc in documentos:
 #     print(doc)
 
+
+def map(document, callback):
+    hour = document["_id"].hour
+    values = [document["0"], document["1"], document["2"], document["3"], document["4"],
+              document["5"], document["6"], document["7"], document["8"], document["9"],
+              document["10"], document["11"], document["12"], document["13"], document["14"],
+              document["15"], document["16"], document["17"]
+              ]
+
+    callback(hour, {"average": sum(values) / len(values)})
+
+
+results = dataBase.conn.map_reduce(
+    map,
+    lambda x, y: y,
+    "average_values"
+)
+
+for result in results.find():
+    print(result)
 results = dataBase.conn['Variables'].aggregate([
     {'$project': {
         'hour': {'$hour': "$_id"},
-        'values': ["$9"]
+        'values': ["$0", "$1", "$2", "$3", "$4", "$5", "$6", "$7",
+                   "$8", "$9", "$10", "$11", "$12", "$13", "$14",
+                   "$15", "$16", "$17"]
     }
     },
     {'$unwind': "$values"

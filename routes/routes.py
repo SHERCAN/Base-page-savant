@@ -36,6 +36,12 @@ templates = Jinja2Templates(directory='templates')
 async def main(request: Request):
     data = dataBase.readDataData()[0]
     data.pop('_id')
+    for k, v in data.items():
+        print(v)
+        for key, value in v.items():
+            data[k][key] = 'All'
+            break
+    print(data)
     clientes = dataBase.conn['Clients'].find()
     states = []
     cities = []
