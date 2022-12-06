@@ -42,3 +42,31 @@ function animate() {
     mesh.rotation.y += 0.01;
 
     renderer.render(scene, camera);
+
+// obtiene el elemento <ul>
+const miUl = document.querySelector('ul');
+
+// un conjunto de datos con información para cada <li>
+const misDatos = [
+  {
+    id: 1,
+    informacion: 'Información del <li> 1',
+  },
+  {
+    id: 2,
+    informacion: 'Información del <li> 2',
+  },
+  // ...
+];
+
+// itera sobre cada elemento de datos
+for (const dato of misDatos) {
+  // crea un nuevo elemento <li>
+  const miLi = document.createElement('li');
+
+  // agrega contenido al elemento <li>
+  miLi.innerHTML = `<a><span class="text">${dato.informacion}</span></a>`;
+
+  // agrega el nuevo elemento <li> al elemento <ul>
+  miUl.appendChild(miLi);
+}
