@@ -97,3 +97,29 @@ async def get_csv():
 async def webhook(request: dict):
     dataBase.sendData(request)
     return ''
+
+
+@main.get("/get_register/{cli}/{reg}",response_class=JSONResponse)
+async def get_register(request:Request,reg: str, cli: str):
+    #cli es cliente y reg es el registro a solicitar
+    documentos : list= dataBase.readDataData()[0]
+    documentos.pop("_id")
+    print(documentos)
+    for _, value in documentos.items():
+    # Recorre todos los campos del documento
+        for campo, valor in value.items():
+            print(valor.replace(" ", ""),reg)
+            # Si el valor del campo es igual al valor buscado, muestra el nombre del campo
+            if valor.replace(" ", "") ==reg:
+                keyCampo=campo
+                break
+    print(keyCampo)
+    consulta= [{'client':cli},{keyCampo:1}]
+    getData = dataBase.readData(consulta)
+    base = list(getData).copy()
+    for data in base:
+        data['data']=data[keyCampo]
+        data.pop(keyCampo)
+        data.pop('_id')
+    base = jsonable_encoder(base)
+    return JSONResponse(content=base)

@@ -16,17 +16,16 @@ class BaseData():
 
     def sendData(self, data):
         self.__conn['Variables'].insert_one(data)
-
-    def readData(self, **kwargs):
+    def readData(self,*args,limite:int=100):
         '''
         parameters:
         limit: limit of data
-        type_limit: int'''
-        if len(kwargs) > 0:
-
-            return self.__conn['Variables'].find(kwargs)
+        type_limit: int
+        ([{'client': 'CLI-IA-DM-23'}, {'30': 1}],)'''
+        if len(args) > 0:
+            return self.__conn['Variables'].find(args[0][0],args[0][1]).limit(limite)
         else:
-            return self.__conn['Variables'].find()
+            return self.__conn['Variables'].find().limit(limite)
 
     def sendUser(self, data):
         insert = {
